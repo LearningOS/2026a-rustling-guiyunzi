@@ -2,7 +2,6 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -69,14 +68,36 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
-        }
+}
+
+impl<T: Ord + Clone> LinkedList<T> {
+	pub fn merge(mut list_a: LinkedList<T>, mut list_b: LinkedList<T>) -> Self {
+		let mut result = LinkedList::<T>::new();
+
+		while let (Some(ap), Some(bp)) = (list_a.start, list_b.start) {
+			let val_a = unsafe { (*ap.as_ptr()).val.clone() };
+			let val_b = unsafe { (*bp.as_ptr()).val.clone() };
+			if val_a <= val_b {
+				result.add(val_a);
+				list_a.start = unsafe { (*ap.as_ptr()).next };
+			} else {
+				result.add(val_b);
+				list_b.start = unsafe { (*bp.as_ptr()).next };
+			}
+		}
+
+		while let Some(ap) = list_a.start {
+			let val_a = unsafe { (*ap.as_ptr()).val.clone() };
+			result.add(val_a);
+			list_a.start = unsafe { (*ap.as_ptr()).next };
+		}
+		while let Some(bp) = list_b.start {
+			let val_b = unsafe { (*bp.as_ptr()).val.clone() };
+			result.add(val_b);
+			list_b.start = unsafe { (*bp.as_ptr()).next };
+		}
+
+		result
 	}
 }
 
